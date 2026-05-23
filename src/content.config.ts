@@ -3,6 +3,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import { execSync } from 'node:child_process';
 import { join } from 'node:path';
 import matter from 'gray-matter';
+import { resolvePublicImagePaths } from './lib/images';
+import { uniqueSlug } from './lib/slug';
 
 const BLOG_DIR = './src/blogs';
 
@@ -47,13 +49,15 @@ const blog = defineCollection({
     const files = (await readdir(BLOG_DIR))
       .filter(f => f.endsWith('.md') || f.endsWith('.mdx'));
 
+    const usedSlugs = new Set<string>();
     const posts = await Promise.all(
       files.map(async file => {
         const raw = await readFile(join(BLOG_DIR, file), 'utf-8');
         const { data: frontmatter, content } = matter(raw);
 
-        const html = await renderMarkdown(content, token);
-        const id = file.replace(/\.mdx?$/, '');
+        const id = uniqueSlug(frontmatter.title, usedSlugs);
+        const markdown = resolvePublicImagePaths(content);
+        const html = await renderMarkdown(markdown, token);
 
         return { id, ...frontmatter, html };
       })
