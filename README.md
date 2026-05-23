@@ -1,6 +1,6 @@
 # blog-engine
 
-A minimal markdown blog built with [Astro](https://astro.build). Add a `.md` file to `src/blogs/`, run the dev server, and the post is live.
+A minimal markdown blog engine built with [Astro](https://astro.build). Add a `.md` file to `src/blogs/`, run the dev server, and the post is live.
 
 Deployed at [blog.saurabhvishwakarma.in](https://blog.saurabhvishwakarma.in).
 
