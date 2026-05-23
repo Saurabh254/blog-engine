@@ -7,7 +7,7 @@ Deployed at [blog.saurabhvishwakarma.in](https://blog.saurabhvishwakarma.in).
 ## Prerequisites
 
 - Node.js 22+
-- GitHub CLI logged in (`gh auth login`) **or** a `GITHUB_TOKEN` env var (used to render markdown via the GitHub API)
+- No special GitHub token is required for local development or builds.
 
 ## Quick start
 
@@ -142,9 +142,9 @@ Copy `.env.example` and configure as needed:
 | Variable        | Description |
 |-----------------|-------------|
 | `SITE_URL`      | Production URL (e.g. `https://blog.saurabhvishwakarma.in`) |
-| `GITHUB_TOKEN`  | GitHub token for markdown rendering in CI |
+| `SITE_URL`      | Production URL (e.g. `https://blog.saurabhvishwakarma.in`) |
 
-Locally, `gh auth token` is used automatically if no token is set.
+Markdown rendering is handled locally by Astro during content sync.
 
 ## SEO checklist (per post)
 

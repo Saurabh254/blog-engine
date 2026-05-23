@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import { SITE } from '../lib/site';
 
 const posts = (await getCollection('blog'))
+  .filter(post => import.meta.env.DEV || !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 function formatDate(date: Date) {
