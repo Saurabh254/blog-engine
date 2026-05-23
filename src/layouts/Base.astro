@@ -2,52 +2,107 @@
 import '../styles/global.css';
 
 const { title, description } = Astro.props;
+const year = new Date().getFullYear();
 ---
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap"
-      rel="stylesheet"
-    />
+    <script is:inline>
+      (function () {
+        var stored = localStorage.getItem('theme');
+        var dark =
+          stored === 'dark' ||
+          (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      })();
+    </script>
   </head>
   <body
-    class="min-h-dvh bg-[#e8ecf8] font-sans text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100"
+    class="min-h-dvh bg-page font-[Verdana,Geneva,sans-serif] text-[13pt] leading-normal text-ink antialiased transition-colors duration-200"
   >
     <div
-      class="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_90%_60%_at_8%_-8%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_70%_50%_at_95%_12%,rgba(139,92,246,0.12),transparent_50%)] dark:opacity-40"
-      aria-hidden="true"
-    ></div>
+      class="mx-auto w-full max-w-none px-4 py-8 sm:max-w-2xl sm:px-6 md:max-w-3xl lg:max-w-[52rem] lg:px-8"
+    >
+      <header
+        class="mb-10 flex items-center justify-between gap-4 border-b border-border pb-3"
+      >
+        <a href="/" class="font-bold text-ink no-underline hover:underline">blog</a>
 
-    <div class="relative mx-auto w-full max-w-xl px-5 py-10 sm:px-6 sm:py-14">
-      <header class="mb-10 flex items-baseline justify-between gap-4 border-b border-zinc-900/10 pb-4 dark:border-zinc-100/10">
-        <a
-          href="/"
-          class="text-base font-semibold tracking-tight text-zinc-900 hover:text-indigo-600 dark:text-zinc-100 dark:hover:text-indigo-400"
-        >
-          my blog
-        </a>
-        <a
-          href="https://saurabhvishwakarma.in"
-          class="text-xs text-zinc-500 transition-colors hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400"
-        >
-          portfolio →
-        </a>
+        <nav class="flex items-center gap-2 sm:gap-3">
+          <button
+            id="theme-toggle"
+            type="button"
+            class="rounded px-2 py-1 text-[11pt] text-muted transition-colors hover:bg-ink/5 hover:text-ink"
+            aria-label="Toggle dark mode"
+          >
+            <span id="theme-toggle-label">dark</span>
+          </button>
+
+          <span class="text-border select-none" aria-hidden="true">·</span>
+
+          <a
+            href="https://saurabhvishwakarma.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group inline-flex items-center gap-1 rounded-md border border-accent/25 bg-accent/[0.04] px-2.5 py-1 text-[11pt] font-medium tracking-wide text-accent no-underline transition-colors hover:border-accent/50 hover:bg-accent/10 hover:text-accent-hover"
+          >
+            portfolio
+            <span
+              class="text-[10pt] opacity-70 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
+              aria-hidden="true">↗</span>
+          </a>
+        </nav>
       </header>
 
       <main>
         <slot />
       </main>
 
-      <footer class="mt-16 border-t border-zinc-900/10 pt-6 text-xs text-zinc-500 dark:border-zinc-100/10 dark:text-zinc-400">
-        <p>write markdown, ship posts.</p>
+      <footer class="mt-14 border-t border-border pt-4 text-[11pt] leading-relaxed text-muted">
+        <p>
+          © {year}
+          <a
+            href="https://saurabhvishwakarma.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-accent no-underline hover:underline"
+          >
+            Saurabh Vishwakarma
+          </a>. Essays on work, connection, and building things.
+        </p>
       </footer>
     </div>
+
+    <script>
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle');
+        const label = document.getElementById('theme-toggle-label');
+        if (!btn || !label) return;
+
+        const sync = () => {
+          label.textContent = document.documentElement.classList.contains('dark')
+            ? 'light'
+            : 'dark';
+        };
+
+        if (!btn.dataset.bound) {
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', () => {
+            const dark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
+            sync();
+          });
+        }
+
+        sync();
+      }
+
+      initThemeToggle();
+      document.addEventListener('astro:page-load', initThemeToggle);
+    </script>
   </body>
 </html>
