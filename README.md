@@ -1,43 +1,158 @@
-# Astro Starter Kit: Minimal
+# blog-engine
 
-```sh
-npm create astro@latest -- --template minimal
+A minimal markdown blog built with [Astro](https://astro.build). Add a `.md` file to `src/blogs/`, run the dev server, and the post is live.
+
+Deployed at [blog.saurabhvishwakarma.in](https://blog.saurabhvishwakarma.in).
+
+## Prerequisites
+
+- Node.js 22+
+- GitHub CLI logged in (`gh auth login`) **or** a `GITHUB_TOKEN` env var (used to render markdown via the GitHub API)
+
+## Quick start
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Open [http://localhost:4321](http://localhost:4321).
 
-## 🚀 Project Structure
+## Create a new blog post
 
-Inside of your Astro project, you'll see the following folders and files:
+### 1. Add a markdown file
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+Create a new file in `src/blogs/`:
+
+```bash
+touch src/blogs/my-new-post.md
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+The filename does not affect the URL. The **title** in frontmatter does.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### 2. Add frontmatter + content
 
-Any static assets, like images, can be placed in the `public/` directory.
+```markdown
+---
+title: My New Post
+description: One sentence summary for SEO and social previews (keep under ~160 characters).
+date: 2026-05-23
+tags: [thoughts]
+draft: false
+image: images/og-cover.webp
+---
 
-## 🧞 Commands
+Your post content here. Write in normal Markdown.
 
-All commands are run from the root of the project, from a terminal:
+## A section heading
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Paragraph text. **Bold** and [links](https://example.com) work.
 
-## 👀 Want to learn more?
+- Bullet lists
+- Are supported
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+![](images/inline-photo.webp)
+```
+
+### 3. Preview locally
+
+```bash
+npm run dev
+```
+
+Your post URL is generated from the title:
+
+| Title            | URL                    |
+|------------------|------------------------|
+| `My New Post`    | `/my-new-post`         |
+| `Hello World!`   | `/hello-world`         |
+
+### 4. Build for production
+
+```bash
+SITE_URL=https://blog.saurabhvishwakarma.in npm run build
+npm run preview
+```
+
+Set `SITE_URL` in your hosting provider (Cloudflare Pages, etc.) so canonical URLs, sitemap, and Open Graph tags are correct.
+
+## Frontmatter reference
+
+| Field         | Required | Description |
+|---------------|----------|-------------|
+| `title`       | Yes      | Post title. Used for the page heading and URL slug. |
+| `date`        | Yes      | Publish date (`YYYY-MM-DD`). |
+| `description` | No       | SEO / social preview text. Highly recommended. |
+| `tags`        | No       | List of tags (stored, not shown on site yet). |
+| `draft`       | No       | `true` = visible in dev only, excluded from production builds. |
+| `image`       | No       | Social preview image (see Images below). |
+
+## Images
+
+Put image files in `public/` and reference them in markdown:
+
+```
+public/
+  images/
+    og-cover.webp
+    diagram.png
+```
+
+In your post:
+
+```markdown
+---
+image: images/og-cover.webp
+---
+
+![](images/diagram.png)
+
+[](images/photo.webp)
+```
+
+Paths like `images/photo.webp` are automatically resolved to `/images/photo.webp`.
+
+You can also use absolute paths (`/images/photo.webp`) or full URLs (`https://...`).
+
+## Project structure
+
+```
+src/
+  blogs/           # Markdown posts go here
+  layouts/         # Base layout + post layout
+  pages/           # Index + dynamic post routes
+  lib/             # Slug, images, site config
+public/
+  images/          # Static images
+  robots.txt
+```
+
+## Commands
+
+| Command           | Action                          |
+|-------------------|---------------------------------|
+| `npm run dev`     | Start dev server                |
+| `npm run build`   | Build static site to `dist/`    |
+| `npm run preview` | Preview the production build    |
+
+## Environment variables
+
+Copy `.env.example` and configure as needed:
+
+| Variable        | Description |
+|-----------------|-------------|
+| `SITE_URL`      | Production URL (e.g. `https://blog.saurabhvishwakarma.in`) |
+| `GITHUB_TOKEN`  | GitHub token for markdown rendering in CI |
+
+Locally, `gh auth token` is used automatically if no token is set.
+
+## SEO checklist (per post)
+
+- [ ] Unique `title`
+- [ ] Unique `description` (~150 characters)
+- [ ] Correct `date`
+- [ ] `draft: false` before publishing
+- [ ] Optional `image` for social sharing
+- [ ] Descriptive alt text on images: `![what it shows](images/...)`
+
+Sitemap is generated automatically at `/sitemap-index.xml` on build.
