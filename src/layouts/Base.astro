@@ -1,0 +1,26 @@
+---
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style>
+      :root { --bg: #0f0f0f; --text: #e8e8e8; --muted: #888; --accent: #a78bfa; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: var(--bg); color: var(--text); font: 1.05rem/1.7 system-ui, sans-serif; max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <header style="margin-bottom:3rem;border-bottom:1px solid #222;padding-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
+      <a href="/" style="font-weight:700;font-size:1.2rem;color:var(--text)">my blog</a>
+      <nav style="font-size:.9rem;color:var(--muted)">rss · about</nav>
+    </header>
+    <slot />
+  </body>
+</html>

@@ -1,17 +1,18 @@
 ---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="my blog">
+  <h1>Posts</h1>
+  <ul>
+    {posts.map(post => (
+      <li>
+        <a href={`/${post.id}`}>{post.data.title}</a>
+        <time>{post.data.date.toLocaleDateString()}</time>
+      </li>
+    ))}
+  </ul>
+</Base>

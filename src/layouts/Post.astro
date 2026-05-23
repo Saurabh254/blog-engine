@@ -1,0 +1,49 @@
+---
+import Base from './Base.astro';
+const { title, description, date, tags } = Astro.props;
+const formatted = new Date(date).toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric'
+});
+---
+<Base title={title} description={description}>
+  <article>
+    <header style="margin-bottom:2.5rem">
+      <h1 style="font-size:2rem;line-height:1.2;margin-bottom:.5rem">{title}</h1>
+      <time style="color:var(--muted);font-size:.9rem">{formatted}</time>
+      {tags.length > 0 && (
+        <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+          {tags.map(t => (
+            <span style="font-size:.8rem;padding:.2rem .6rem;border-radius:999px;background:#1e1e1e;color:var(--muted)">#{t}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <slot />
+
+  </article>
+
+  <style is:global>
+    .prose { color: #e8e8e8; line-height: 1.7 }
+    .prose h1, .prose h2, .prose h3 { margin: 1.8rem 0 .6rem; font-weight: 600 }
+    .prose h2 { font-size: 1.4rem; border-bottom: 1px solid #30363d; padding-bottom: .4rem }
+    .prose p { margin-bottom: 1.2rem }
+    .prose a { color: #a78bfa }
+    .prose code { font-size: .88em; background: #161b22; padding: .15rem .4rem; border-radius: 4px }
+    .prose pre { background: #161b22; border: 1px solid #30363d; padding: 1.2rem; border-radius: 8px; overflow-x: auto; margin-bottom: 1.2rem }
+    .prose pre code { background: none; padding: 0 }
+    .prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 1.2rem }
+    .prose li { margin-bottom: .3rem }
+    .prose blockquote { border-left: 3px solid #a78bfa; padding-left: 1rem; color: #8b949e; margin: 1.5rem 0 }
+    .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem }
+    .prose th, .prose td { border: 1px solid #30363d; padding: .5rem .75rem }
+    .prose th { background: #161b22 }
+    .prose img { max-width: 100%; border-radius: 8px }
+    .prose hr { border: none; border-top: 1px solid #30363d; margin: 2rem 0 }
+    .pl-k  { color: #ff7b72 }
+    .pl-s  { color: #a5d6ff }
+    .pl-c  { color: #8b949e }
+    .pl-en { color: #d2a8ff }
+    .pl-c1 { color: #79c0ff }
+  </style>
+</Base>
