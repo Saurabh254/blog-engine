@@ -1,30 +1,52 @@
 ---
 import Base from './Base.astro';
 
-const { title, description, date } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  image?: string;
+  slug: string;
+  draft?: boolean;
+}
+
+const { title, description, date, image, slug, draft } = Astro.props;
 const formatted = new Date(date).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
 ---
-<Base title={title} description={description}>
-  <article>
+<Base
+  title={title}
+  description={description}
+  canonicalPath={`/${slug}`}
+  ogType="article"
+  publishedAt={date}
+  image={image}
+  noindex={draft}
+>
+  <article itemscope itemtype="https://schema.org/BlogPosting">
+    <meta itemprop="headline" content={title} />
+    {description && <meta itemprop="description" content={description} />}
+    <meta itemprop="datePublished" content={date.toISOString()} />
+
     <p class="mb-8">
       <a href="/" class="text-accent no-underline hover:underline">← all posts</a>
     </p>
 
     <header class="mb-8">
-      <h1 class="text-[15pt] font-bold leading-snug text-ink">
+      <h1 class="text-[15pt] font-bold leading-snug text-ink" itemprop="name">
         {title}
       </h1>
-      <time class="mt-1 block text-[11pt] text-muted" datetime={date}>
+      <time class="mt-1 block text-[11pt] text-muted" datetime={date.toISOString()} itemprop="datePublished">
         {formatted}
       </time>
     </header>
 
     <div
       class="prose prose-sm max-w-none prose-p:my-3 prose-p:text-[13pt] prose-p:leading-relaxed prose-p:text-ink prose-headings:mt-7 prose-headings:mb-2 prose-headings:font-bold prose-headings:text-ink prose-h2:text-[14pt] prose-li:my-1 prose-li:text-[13pt] prose-li:text-ink prose-strong:font-bold prose-strong:text-ink prose-a:text-accent prose-a:underline hover:prose-a:text-accent-hover prose-img:my-5 prose-img:max-w-full prose-code:text-[12pt] prose-code:text-ink prose-pre:border prose-pre:border-border prose-pre:bg-page prose-pre:text-[12pt] prose-blockquote:border-l-2 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:text-ink [&_li_strong]:text-ink [&_p_strong]:text-ink"
+      itemprop="articleBody"
     >
       <slot />
     </div>

@@ -1,6 +1,6 @@
 const IMAGE_EXT = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
 
-function resolvePublicSrc(src: string): string {
+export function resolvePublicSrc(src: string): string {
   const trimmed = src.trim().replace(/^["']|["']$/g, '');
   if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('/')) return trimmed;
   const path = trimmed.replace(/^\.\//, '');

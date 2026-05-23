@@ -1,7 +1,28 @@
 ---
 import '../styles/global.css';
+import Seo from '../components/Seo.astro';
+import { SITE } from '../lib/site';
 
-const { title, description } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: 'website' | 'article';
+  publishedAt?: Date;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  ogType = 'website',
+  publishedAt,
+  image,
+  noindex,
+} = Astro.props;
+
 const year = new Date().getFullYear();
 ---
 <!doctype html>
@@ -9,8 +30,16 @@ const year = new Date().getFullYear();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <Seo
+      title={title}
+      description={description}
+      canonicalPath={canonicalPath}
+      type={ogType}
+      publishedAt={publishedAt}
+      image={image}
+      noindex={noindex}
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline>
       (function () {
         var stored = localStorage.getItem('theme');
@@ -30,7 +59,7 @@ const year = new Date().getFullYear();
       <header
         class="mb-10 flex items-center justify-between gap-4 border-b border-border pb-3"
       >
-        <a href="/" class="font-bold text-ink no-underline hover:underline">blog</a>
+        <a href="/" class="font-bold text-ink no-underline hover:underline">{SITE.name}</a>
 
         <nav class="flex items-center gap-2 sm:gap-3">
           <button
@@ -45,7 +74,7 @@ const year = new Date().getFullYear();
           <span class="text-border select-none" aria-hidden="true">·</span>
 
           <a
-            href="https://saurabhvishwakarma.in"
+            href={SITE.authorUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="group inline-flex items-center gap-1 rounded-md border border-accent/25 bg-accent/[0.04] px-2.5 py-1 text-[11pt] font-medium tracking-wide text-accent no-underline transition-colors hover:border-accent/50 hover:bg-accent/10 hover:text-accent-hover"
@@ -66,13 +95,13 @@ const year = new Date().getFullYear();
         <p>
           © {year}
           <a
-            href="https://saurabhvishwakarma.in"
+            href={SITE.authorUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="text-accent no-underline hover:underline"
           >
-            Saurabh Vishwakarma
-          </a>. Essays on work, connection, and building things.
+            {SITE.author}
+          </a>. {SITE.description}
         </p>
       </footer>
     </div>
