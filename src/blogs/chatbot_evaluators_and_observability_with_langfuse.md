@@ -1,7 +1,7 @@
 ---
 title: Chatbot Evaluators and Observability with Langfuse
 description: How to add evaluators and observability to a chatbot using Langfuse for better monitoring and debugging.
-date: 2025-06-25
+date: 2026-06-25
 tags: [langfuse, chatbot, observability, evaluation]
 ---
 
