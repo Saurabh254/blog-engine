@@ -9,11 +9,11 @@ Table of Contents
 
 
 1. [Overview](#overview)
-2. The Problem With "Just Check the Logs”
-3. What Langfuse Does in My Stack
-4. How the Tracing Is Structured
-5. Running Evaluations Against the Live System
-6. Closing Thoughts
+2. [The Problem With "Just Check the Logs"](#the-problem-with-just-check-the-logs)
+3. [What Langfuse Does in My Stack](#what-langfuse-does-in-my-stack)
+4. [How the Tracing Is Structured](#how-the-tracing-is-structured)
+5. [Running Evaluations Against the Live System](#running-evaluations-against-the-live-system)
+6. [Closing Thoughts](#closing-thoughts)
 
 
 ---
@@ -29,7 +29,7 @@ That's when I properly committed to Langfuse as my observability and evaluation 
 
 ---
 
-## The Problem With "Just Check the Logs"
+# The Problem With "Just Check the Logs"
 
 Before we get into the setup, I want to explain why we felt evaluation was necessary in the first place, because we think a lot of teams skip this step longer than they should.
 
