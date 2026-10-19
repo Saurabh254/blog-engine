@@ -48,3 +48,25 @@ html.dark .prose pre {
   background-color: var(--color-page);
   border-color: var(--color-border);
 }
+
+/* Remove default pseudo-element backticks from Tailwind Typography */
+.prose :where(code):not(:where([class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"] *))::after,
+.prose code::before,
+.prose code::after {
+  content: "" !important;
+}
+
+/* Style inline code cleanly */
+.prose :not(pre) > code {
+  background-color: var(--color-border);
+  color: var(--color-ink);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+  white-space: break-spaces;
+  word-break: break-word;
+}
+

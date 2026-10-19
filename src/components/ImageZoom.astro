@@ -1,0 +1,178 @@
+---
+// src/components/ImageZoom.astro
+---
+
+<div
+  id="image-zoom-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-xs transition-opacity duration-200 opacity-0"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Image preview"
+>
+  <!-- Top bar with caption and controls -->
+  <div class="fixed top-3 left-3 right-3 z-10 flex items-center justify-between text-white/90 pointer-events-none">
+    <p
+      id="image-zoom-caption"
+      class="text-xs sm:text-sm font-mono truncate max-w-[60vw] drop-shadow pointer-events-auto select-none bg-black/50 px-2.5 py-1 rounded border border-white/10 empty:hidden"
+    ></p>
+    <div class="flex items-center gap-2 pointer-events-auto ml-auto">
+      <button
+        id="image-zoom-toggle-size"
+        type="button"
+        class="rounded bg-white/15 hover:bg-white/25 text-white text-xs px-2.5 py-1.5 transition-colors font-mono cursor-pointer border border-white/20 select-none"
+        title="Toggle full resolution (100% / Fit)"
+      >
+        100%
+      </button>
+      <button
+        id="image-zoom-close"
+        type="button"
+        class="rounded bg-white/15 hover:bg-white/25 text-white p-1.5 transition-colors cursor-pointer border border-white/20"
+        aria-label="Close image preview"
+        title="Close (Esc)"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scrollable viewport for image -->
+  <div
+    id="image-zoom-viewport"
+    class="flex h-full w-full items-center justify-center overflow-auto p-4 sm:p-8 select-none"
+  >
+    <img
+      id="image-zoom-img"
+      src=""
+      alt=""
+      class="max-h-[85vh] max-w-[92vw] w-auto h-auto object-contain transition-[transform,max-width,max-height] duration-200 cursor-zoom-in rounded shadow-2xl select-none"
+    />
+  </div>
+</div>
+
+<script>
+  function setupImageZoom() {
+    const modal = document.getElementById('image-zoom-modal');
+    const modalImg = document.getElementById('image-zoom-img') as HTMLImageElement | null;
+    const caption = document.getElementById('image-zoom-caption');
+    const toggleBtn = document.getElementById('image-zoom-toggle-size');
+    const closeBtn = document.getElementById('image-zoom-close');
+    const viewport = document.getElementById('image-zoom-viewport');
+
+    if (!modal || !modalImg || !toggleBtn || !closeBtn || !viewport) return;
+
+    let isFullSize = false;
+
+    function setFullSize(full: boolean) {
+      if (!modalImg || !toggleBtn) return;
+      isFullSize = full;
+      if (full) {
+        modalImg.className =
+          'max-h-none max-w-none w-auto h-auto object-none transition-[transform,max-width,max-height] duration-200 cursor-zoom-out rounded shadow-2xl select-none m-auto';
+        toggleBtn.textContent = 'Fit';
+        toggleBtn.title = 'Fit to screen';
+      } else {
+        modalImg.className =
+          'max-h-[85vh] max-w-[92vw] w-auto h-auto object-contain transition-[transform,max-width,max-height] duration-200 cursor-zoom-in rounded shadow-2xl select-none m-auto';
+        toggleBtn.textContent = '100%';
+        toggleBtn.title = 'View original resolution (100%)';
+      }
+    }
+
+    function openModal(src: string, alt: string) {
+      if (!modal || !modalImg) return;
+      modalImg.src = src;
+      modalImg.alt = alt;
+      if (caption) {
+        caption.textContent = alt || '';
+      }
+      setFullSize(false);
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      // Force repaint for transition
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      modal.classList.add('opacity-100');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      if (!modal || modal.classList.contains('hidden')) return;
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        if (modalImg) modalImg.src = '';
+      }, 200);
+    }
+
+    function toggleZoom() {
+      setFullSize(!isFullSize);
+    }
+
+    // Attach listeners to modal controls
+    if (!modal.dataset.bound) {
+      modal.dataset.bound = 'true';
+
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal();
+      });
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleZoom();
+      });
+
+      modalImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleZoom();
+      });
+
+      viewport.addEventListener('click', (e) => {
+        if (e.target === viewport) {
+          closeModal();
+        }
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+    }
+
+    // Bind to all post images
+    const articleImages = document.querySelectorAll<HTMLImageElement>('.prose img');
+    articleImages.forEach((img) => {
+      if (img.dataset.zoomBound) return;
+      img.dataset.zoomBound = 'true';
+      img.title = img.alt ? `${img.alt} (Click to zoom)` : 'Click to zoom';
+      img.classList.add('cursor-zoom-in');
+
+      img.addEventListener('click', (e) => {
+        // If image is inside an anchor linking somewhere else, do nothing
+        const parentLink = img.closest('a');
+        if (parentLink && parentLink.getAttribute('href') && !parentLink.getAttribute('href')?.startsWith('#')) {
+          return;
+        }
+        e.preventDefault();
+        openModal(img.currentSrc || img.src, img.alt);
+      });
+    });
+  }
+
+  setupImageZoom();
+  document.addEventListener('astro:page-load', setupImageZoom);
+</script>

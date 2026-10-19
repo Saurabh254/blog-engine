@@ -1,5 +1,6 @@
 ---
 import Base from "./Base.astro";
+import ImageZoom from "../components/ImageZoom.astro";
 
 interface Props {
     title: string;
@@ -32,21 +33,21 @@ const formatted = new Date(date).toLocaleDateString("en-US", {
         {description && <meta itemprop="description" content={description} />}
         <meta itemprop="datePublished" content={date.toISOString()} />
 
-        <p class="mb-8">
-            <a href="/" class="text-accent no-underline hover:underline"
+        <p class="mb-6">
+            <a href="/" class="text-accent no-underline hover:underline text-sm font-medium"
                 >← all posts</a
             >
         </p>
 
-        <header class="mb-8">
+        <header class="mb-10 pb-6 border-b border-border">
             <h1
-                class="text-[15pt] font-bold leading-snug text-ink"
+                class="text-2xl sm:text-3xl lg:text-[2.25rem] font-extrabold tracking-tight leading-[1.25] text-ink"
                 itemprop="name"
             >
                 {title}
             </h1>
             <time
-                class="mt-1 block text-[11pt] text-muted"
+                class="mt-2 block text-sm text-muted"
                 datetime={date.toISOString()}
                 itemprop="datePublished"
             >
@@ -55,10 +56,11 @@ const formatted = new Date(date).toLocaleDateString("en-US", {
         </header>
 
         <div
-            class="prose prose-sm max-w-none prose-p:my-3 prose-p:text-[13pt] prose-p:leading-relaxed prose-p:text-ink prose-headings:mt-7 prose-headings:mb-2 prose-headings:font-bold prose-headings:text-ink prose-h2:text-[14pt] prose-li:my-1 prose-li:text-[13pt] prose-li:text-ink prose-strong:font-bold prose-strong:text-ink prose-a:text-accent prose-a:underline hover:prose-a:text-accent-hover prose-img:my-5 prose-img:max-w-full prose-code:text-[12pt] prose-code:text-ink prose-pre:border prose-pre:border-border prose-pre:bg-page prose-pre:text-[12pt] prose-blockquote:border-l-2 prose-blockquote:border-border prose-blockquote:pl-4 prose-blockquote:text-ink [&_li_strong]:text-ink [&_p_strong]:text-ink"
+            class="prose prose-neutral dark:prose-invert max-w-none prose-p:text-[17px] prose-p:leading-[1.75] prose-p:my-5 prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-ink prose-h2:text-[1.65rem] prose-h2:mt-12 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border/60 prose-h3:text-[1.3rem] prose-h3:mt-8 prose-h3:mb-3 prose-h4:text-[1.1rem] prose-h4:mt-6 prose-h4:mb-2 prose-li:text-[17px] prose-li:leading-relaxed prose-li:my-1.5 prose-strong:font-semibold prose-strong:text-ink prose-a:text-accent prose-a:underline hover:prose-a:text-accent-hover prose-img:my-7 prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:shadow-sm prose-img:cursor-zoom-in hover:prose-img:opacity-95 transition-opacity prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-border prose-pre:rounded-xl prose-pre:text-[14.5px] prose-pre:leading-relaxed prose-pre:p-4 sm:prose-pre:p-5 prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-accent/[0.04] prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-ink prose-blockquote:my-6"
             itemprop="articleBody"
         >
             <slot />
         </div>
     </article>
+    <ImageZoom />
 </Base>
