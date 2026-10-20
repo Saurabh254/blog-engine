@@ -18,7 +18,8 @@ I wanted to break them down with practical, runnable examples and visual traces 
    2. [What is a Process?](#what-is-a-process)
    3. [What is a Thread?](#what-is-a-thread)
    4. [Kernel-Level Threads vs. User-Level Threads](#kernel-level-threads-vs-user-level-threads)
-   5. [Async vs. Coroutine: What’s the Difference?](#async-vs-coroutine-whats-the-difference)
+   5. [Where Does Gevent Fit In?](#where-does-gevent-fit-in)
+   6. [Async vs. Coroutine: What’s the Difference?](#async-vs-coroutine-whats-the-difference)
 2. [Practical Examples](#practical-examples)
    1. [1. Multiprocessing (Separate Processes)](#1-multiprocessing-separate-processes)
    2. [2. Multithreading (Separate Threads in a Single Process)](#2-multithreading-separate-threads-in-a-single-process)
@@ -66,6 +67,20 @@ To understand why threads and async behave differently in Python, consider who m
 **Kernel-Level Threads (OS Threads)** are created and scheduled directly by the operating system kernel. This is what Python's `threading` module and `ThreadPoolExecutor` use. On a multi-core machine, the operating system can execute multiple kernel threads in true parallel across separate CPU cores. The OS preemptively pauses and switches threads when there are more active threads than available CPU cores, or when a thread blocks on I/O. Automatic scheduling is handled by the OS, but each thread incurs real memory overhead (stack space), and managing thousands of threads creates high context-switching overhead.
 
 **User-Level Threads (Green Threads / Coroutines)** are managed entirely in user space by the application runtime, without kernel intervention. The runtime or event loop controls when to switch execution between tasks. This gives extremely low memory overhead, allowing tens of thousands of concurrent tasks on a single thread. However, because scheduling is cooperative, a task running an unyielding CPU-heavy operation blocks all other tasks on that thread.
+
+### Where Does Gevent Fit In?
+
+When discussing user-level threads in Python, `gevent` is the most well-known implementation.
+
+`gevent` implements user-level green threads called **greenlets** on top of a single OS thread. Instead of asking the operating system to create new threads, `gevent` manages execution cooperatively inside the Python process using an internal event loop based on `libev` or `libuv`.
+
+The core mechanism of `gevent` is **monkey patching**. By calling `gevent.monkey.patch_all()`, `gevent` dynamically replaces standard blocking Python modules (such as `socket`, `ssl`, and `time.sleep`) with non-blocking greenlet versions at runtime.
+
+This allows developers to write standard, synchronous-looking code without `async` or `await` keywords. When a greenlet performs a blocking call like `time.sleep()` or makes a network request, `gevent` automatically yields control behind the scenes, allowing another greenlet to run on the same thread while waiting for I/O.
+
+Before Python introduced native `asyncio` and `async/await` syntax in Python 3.4 and 3.5, `gevent` was the primary tool for building high-concurrency network services in Python. Today, it remains widely used in production web servers such as Gunicorn (using `worker_class = "gevent"`) to handle thousands of concurrent client connections with synchronous application frameworks like Flask or Django.
+
+The trade-off with `gevent` centers on monkey patching: modifying Python internals at runtime can cause unexpected edge cases when interacting with third-party C extensions or native libraries that expect real OS threads. Additionally, because execution is cooperative on a single thread, any CPU-heavy computation will block all other greenlets.
 
 ### Async vs. Coroutine: What’s the Difference?
 
@@ -294,3 +309,4 @@ Cons: Requires an all-async call chain and async libraries (like `httpx` instead
 1. **Multiprocessing**: Use for **CPU-heavy work** (data processing, machine learning inference, image manipulation, heavy math). Each process gets its own Python instance, giving you true multi-core parallel speed.
 2. **Multithreading**: Use for **I/O waiting** when working with **existing synchronous libraries** where rewriting everything to `async/await` is not practical.
 3. **Async**: Use for **high-volume network I/O** (web APIs built with FastAPI, WebSockets, scrapers, chat applications) where you need to handle thousands of concurrent requests cleanly on a single thread.
+4. **Gevent**: Use when deploying **synchronous web applications** (such as Flask or Django on Gunicorn) to handle high concurrent I/O traffic without rewriting your codebase to `async/await`.
